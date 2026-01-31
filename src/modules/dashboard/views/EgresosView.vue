@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components'
-import { PieChart, LineChart, BarChart } from '@/shared/components'
-import { useBudgets } from '@/modules/budget/composables/useBudgets'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/shared/components'
+import { PieChart, LineChart, BarChart } from '~/shared/components'
+import { useBudgets } from '~/modules/budget/composables/useBudgets'
 
 // Use budgets for expenses (regresar al sistema original)
 const { tables, addTableMutation, deleteTableMutation, updateTableMutation } = useBudgets()
@@ -17,7 +17,7 @@ const editTableValues = ref<Record<string, { name: string, description: string }
 
 // Computed properties for expenses
 const totalExpenses = computed(() => {
-  if (!tables.value || tables.value.length === 0) return 0
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) return 0
   
   return tables.value.reduce((sum: number, table: any) => {
     return sum + table.items.reduce((itemSum: number, item: any) => itemSum + item.amount, 0)
@@ -25,12 +25,12 @@ const totalExpenses = computed(() => {
 })
 
 const averageExpense = computed(() => {
-  if (!tables.value || tables.value.length === 0) return 0
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) return 0
   return totalExpenses.value / tables.value.length
 })
 
 const highestCategory = computed(() => {
-  if (!tables.value || tables.value.length === 0) {
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) {
     return { name: 'Sin categorías', amount: 0 }
   }
   
@@ -46,12 +46,15 @@ const highestCategory = computed(() => {
 
 // Chart data for expenses
 const expenseDistributionData = computed(() => {
-  if (!tables.value || tables.value.length === 0) {
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) {
     return {
       labels: ['Sin datos'],
       datasets: [{
+        label: 'Gastos',
         data: [1],
-        backgroundColor: ['#e5e7eb']
+        backgroundColor: ['#e5e7eb'],
+        borderColor: ['#e5e7eb'],
+        borderWidth: 1
       }]
     }
   }
@@ -59,13 +62,19 @@ const expenseDistributionData = computed(() => {
   return {
     labels: tables.value.map((table: any) => table.name),
     datasets: [{
+      label: 'Gastos',
       data: tables.value.map((table: any) => 
         table.items.reduce((sum: number, item: any) => sum + item.amount, 0)
       ),
       backgroundColor: tables.value.map((_: any, index: number) => {
         const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
-        return colors[index % colors.length]
-      })
+        return colors[index % colors.length] as string
+      }),
+      borderColor: tables.value.map((_: any, index: number) => {
+        const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
+        return colors[index % colors.length] as string
+      }),
+      borderWidth: 1
     }]
   }
 })
@@ -73,7 +82,7 @@ const expenseDistributionData = computed(() => {
 const expenseTrendData = computed(() => {
   const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio']
   
-  if (!tables.value || tables.value.length === 0) {
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) {
     return {
       labels: months,
       datasets: [{
@@ -81,6 +90,7 @@ const expenseTrendData = computed(() => {
         data: [0, 0, 0, 0, 0, 0],
         borderColor: '#ef4444',
         backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderWidth: 2,
         tension: 0.4
       }]
     }
@@ -99,20 +109,22 @@ const expenseTrendData = computed(() => {
       data: trendData,
       borderColor: '#ef4444',
       backgroundColor: 'rgba(239, 68, 68, 0.1)',
-      tension: 0.4,
-      fill: true
+      borderWidth: 2,
+      tension: 0.4
     }]
   }
 })
 
 const categoryComparisonData = computed(() => {
-  if (!tables.value || tables.value.length === 0) {
+  if (!tables || !('value' in tables) || !tables.value || tables.value.length === 0) {
     return {
       labels: ['Sin datos'],
       datasets: [{
         label: 'Gastos',
         data: [0],
-        backgroundColor: ['#e5e7eb']
+        backgroundColor: ['#e5e7eb'],
+        borderColor: ['#e5e7eb'],
+        borderWidth: 1
       }]
     }
   }
@@ -126,16 +138,35 @@ const categoryComparisonData = computed(() => {
       ),
       backgroundColor: tables.value.map((_: any, index: number) => {
         const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
-        return colors[index % colors.length]
-      })
+        return colors[index % colors.length] as string
+      }),
+      borderColor: tables.value.map((_: any, index: number) => {
+        const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
+        return colors[index % colors.length] as string
+      }),
+      borderWidth: 1
     }]
   }
 })
 
 const currency = computed(() => 'S/')
 
+// Helper function to safely get edit value
+const getEditTableValue = (tableId: string, field: 'name' | 'description') => {
+  return editTableValues.value[tableId]?.[field] || ''
+}
+
+// Helper function to safely set edit value
+const setEditTableValue = (tableId: string, field: 'name' | 'description', event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!editTableValues.value[tableId]) {
+    editTableValues.value[tableId] = { name: '', description: '' }
+  }
+  editTableValues.value[tableId][field] = target.value
+}
+
 // Initialize edit values when tables change
-watch(() => tables.value, (newTables: any) => {
+watch(() => tables && 'value' in tables ? tables.value : [], (newTables: any) => {
   if (!newTables) return
   
   newTables.forEach((table: any) => {
@@ -157,7 +188,10 @@ const addTable = () => {
   addTableMutation.mutate({
     name: newTableName.value.trim(),
     description: 'Nueva categoría de egresos',
-    items: []
+    items: [],
+    userId: 'default-user',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   }, {
     onSuccess: () => {
       newTableName.value = ''
@@ -189,7 +223,7 @@ const cancelEditTable = (tableId?: string) => {
 }
 
 const deleteTable = (tableId: string) => {
-  const table = tables.value?.find((t: any) => t.id === tableId)
+  const table = tables && 'value' in tables ? tables.value?.find((t: any) => t.id === tableId) : null
   if (confirm(`¿Estás seguro de eliminar la categoría "${table?.name}"? Esta acción no se puede deshacer.`)) {
     deleteTableMutation.mutate(tableId)
   }
@@ -205,7 +239,7 @@ const deleteTable = (tableId: string) => {
           <p class="text-[#6b7280]">Gestiona tus categorías de gastos</p>
         </div>
         <div class="flex gap-3">
-          <Button variant="outline" @click="showEditCategoriesModal = true">
+          <Button variant="secondary" @click="showEditCategoriesModal = true">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
@@ -333,7 +367,7 @@ const deleteTable = (tableId: string) => {
               <div class="flex items-center justify-between mb-3">
                 <h4 class="font-medium text-[#111827]">{{ table.name }}</h4>
                 <Button 
-                  variant="outline" 
+                  variant="danger" 
                   size="sm"
                   @click="deleteTable(table.id)"
                   class="text-red-600 hover:bg-red-50"
@@ -349,7 +383,8 @@ const deleteTable = (tableId: string) => {
                 <div>
                   <label class="block text-sm font-medium text-[#111827] mb-1">Nombre</label>
                   <input
-                    v-model="editTableValues[table.id].name"
+                    :value="getEditTableValue(table.id, 'name')"
+                    @input="setEditTableValue(table.id, 'name', $event)"
                     type="text"
                     class="w-full px-3 py-2 border border-[#e5e7eb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009ef7] focus:border-transparent"
                     placeholder="Nombre de la categoría"
@@ -358,7 +393,8 @@ const deleteTable = (tableId: string) => {
                 <div>
                   <label class="block text-sm font-medium text-[#111827] mb-1">Descripción</label>
                   <input
-                    v-model="editTableValues[table.id].description"
+                    :value="getEditTableValue(table.id, 'description')"
+                    @input="setEditTableValue(table.id, 'description', $event)"
                     type="text"
                     class="w-full px-3 py-2 border border-[#e5e7eb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009ef7] focus:border-transparent"
                     placeholder="Descripción"

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components'
-import { PieChart, LineChart, BarChart } from '@/shared/components'
+import { useAuthStore } from '~/stores/auth'
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '~/shared/components'
+import { PieChart, LineChart, BarChart } from '~/shared/components'
 
 const authStore = useAuthStore()
 
@@ -26,8 +26,11 @@ const salaryDistributionData = computed(() => {
     return {
       labels: ['Sin datos'],
       datasets: [{
+        label: 'Ingresos',
         data: [1],
-        backgroundColor: ['#e5e7eb']
+        backgroundColor: ['#e5e7eb'],
+        borderColor: ['#e5e7eb'],
+        borderWidth: 1
       }]
     }
   }
@@ -35,11 +38,17 @@ const salaryDistributionData = computed(() => {
   return {
     labels: salaries.value.map(salary => salary.name),
     datasets: [{
+      label: 'Ingresos',
       data: salaries.value.map(salary => salary.amount),
       backgroundColor: salaries.value.map((_, index) => {
         const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-        return colors[index % colors.length]
-      })
+        return colors[index % colors.length] as string
+      }),
+      borderColor: salaries.value.map((_, index) => {
+        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+        return colors[index % colors.length] as string
+      }),
+      borderWidth: 1
     }]
   }
 })
@@ -55,6 +64,7 @@ const salaryTrendData = computed(() => {
         data: [0, 0, 0, 0, 0, 0],
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 2,
         tension: 0.4
       }]
     }
@@ -66,17 +76,18 @@ const salaryTrendData = computed(() => {
     return Math.max(0, baseAmount + variation)
   })
 
-  return {
-    labels: months,
-    datasets: [{
-      label: 'Ingresos Mensuales',
-      data: trendData,
-      borderColor: '#10b981',
-      backgroundColor: 'rgba(16, 185, 129, 0.1)',
-      tension: 0.4,
-      fill: true
-    }]
-  }
+    return {
+      labels: months,
+      datasets: [{
+        label: 'Ingresos Mensuales',
+        data: trendData,
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true
+      }]
+    }
 })
 
 const salaryComparisonData = computed(() => {
@@ -86,22 +97,29 @@ const salaryComparisonData = computed(() => {
       datasets: [{
         label: 'Sueldos',
         data: [0],
-        backgroundColor: ['#e5e7eb']
+        backgroundColor: ['#e5e7eb'],
+        borderColor: ['#e5e7eb'],
+        borderWidth: 1
       }]
     }
   }
 
-  return {
-    labels: salaries.value.map(salary => salary.name),
-    datasets: [{
-      label: 'Monto Actual',
-      data: salaries.value.map(salary => salary.amount),
-      backgroundColor: salaries.value.map((_, index) => {
-        const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-        return colors[index % colors.length]
-      })
-    }]
-  }
+    return {
+      labels: salaries.value.map(salary => salary.name),
+      datasets: [{
+        label: 'Monto Actual',
+        data: salaries.value.map(salary => salary.amount),
+        backgroundColor: salaries.value.map((_, index) => {
+          const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+          return colors[index % colors.length] as string
+        }),
+        borderColor: salaries.value.map((_, index) => {
+          const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+          return colors[index % colors.length] as string
+        }),
+        borderWidth: 1
+      }]
+    }
 })
 
 // Calculate total income
@@ -110,6 +128,20 @@ const totalIncome = computed(() => {
 })
 
 const currency = computed(() => 'S/')
+
+// Helper function to safely get edit value
+const getEditSalaryValue = (salaryId: string, field: 'name' | 'amount') => {
+  return editSalaryValues.value[salaryId]?.[field] || ''
+}
+
+// Helper function to safely set edit value
+const setEditSalaryValue = (salaryId: string, field: 'name' | 'amount', event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!editSalaryValues.value[salaryId]) {
+    editSalaryValues.value[salaryId] = { name: '', amount: '' }
+  }
+  editSalaryValues.value[salaryId][field] = target.value
+}
 
 // Load salaries from localStorage
 const loadSalariesFromStorage = () => {
@@ -217,7 +249,7 @@ onMounted(() => {
         <p class="text-sm text-gray-500">Gestiona tus fuentes de ingresos</p>
       </div>
       <div class="flex gap-3">
-        <Button variant="outline" @click="showEditSalariesModal = true">
+        <Button variant="secondary" @click="showEditSalariesModal = true">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
@@ -347,7 +379,7 @@ onMounted(() => {
               <div class="flex items-center justify-between mb-3">
                 <h4 class="font-medium text-[#111827]">{{ salary.name }}</h4>
                 <Button 
-                  variant="outline" 
+                  variant="danger" 
                   size="sm"
                   @click="deleteSalary(salary.id)"
                   class="text-red-600 hover:bg-red-50"
@@ -363,7 +395,8 @@ onMounted(() => {
                 <div>
                   <label class="block text-sm font-medium text-[#111827] mb-1">Nombre</label>
                   <input
-                    v-model="editSalaryValues[salary.id].name"
+                    :value="getEditSalaryValue(salary.id, 'name')"
+                    @input="setEditSalaryValue(salary.id, 'name', $event)"
                     type="text"
                     class="w-full px-3 py-2 border border-[#e5e7eb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009ef7] focus:border-transparent"
                     placeholder="Nombre del ingreso"
@@ -372,7 +405,8 @@ onMounted(() => {
                 <div>
                   <label class="block text-sm font-medium text-[#111827] mb-1">Monto</label>
                   <input
-                    v-model="editSalaryValues[salary.id].amount"
+                    :value="getEditSalaryValue(salary.id, 'amount')"
+                    @input="setEditSalaryValue(salary.id, 'amount', $event)"
                     type="number"
                     class="w-full px-3 py-2 border border-[#e5e7eb] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009ef7] focus:border-transparent"
                     placeholder="0.00"

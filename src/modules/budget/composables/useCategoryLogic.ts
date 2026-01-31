@@ -12,8 +12,8 @@ export const useCategoryLogic = () => {
 
   // Find current category
   const currentCategory = computed(() => {
-    if (!tables.value) return null
-    return tables.value.find(table => table.id === categoryId.value) || null
+    if (!tables || !('value' in tables) || !tables.value) return null
+    return tables.value.find((table: any) => table.id === categoryId.value) || null
   })
 
   // State for modals and editing
@@ -30,7 +30,7 @@ export const useCategoryLogic = () => {
 
   // Actions
   const startEditItem = (itemId: string) => {
-    const item = currentCategory.value?.items.find(i => i.id === itemId)
+    const item = currentCategory.value?.items.find((i: any) => i.id === itemId)
     if (item) {
       editingItemId.value = itemId
       editItemValues.value[itemId] = {

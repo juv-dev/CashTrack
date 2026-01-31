@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import type { RouteName } from '@/shared/types'
+import { useAuthStore } from '~/stores/auth'
+import type { RouteName } from '~/shared/types'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,14 +9,14 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login' as RouteName,
-      component: () => import('@/modules/auth/views/LoginView.vue'),
+      component: () => import('~/modules/auth/views/LoginView.vue'),
       meta: { requiresAuth: false }
     },
     
     // Ruta raíz que usa el layout de aplicación
     {
       path: '/',
-      component: () => import('@/shared/components/layout/AppLayout.vue'),
+      component: () => import('~/shared/components/layout/AppLayout.vue'),
       meta: { requiresAuth: true },
       children: [
         // Ruta raíz redirige a dashboard
@@ -27,42 +27,42 @@ const router = createRouter({
         {
           path: 'dashboard',
           name: 'dashboard' as RouteName,
-          component: () => import('@/modules/dashboard/views/DashboardView.vue'),
+          component: () => import('~/modules/dashboard/views/DashboardView.vue'),
           children: [
             {
               path: 'ingresos',
               name: 'ingresos' as RouteName,
-              component: () => import('@/modules/dashboard/views/IngresosView.vue')
+              component: () => import('~/modules/dashboard/views/IngresosView.vue')
             },
             {
               path: 'egresos',
               name: 'egresos' as RouteName,
-              component: () => import('@/modules/dashboard/views/EgresosView.vue')
+              component: () => import('~/modules/dashboard/views/EgresosView.vue')
             }
           ]
         },
         {
           path: 'budgets',
           name: 'budgets' as RouteName,
-          component: () => import('@/modules/budget/views/BudgetsView.vue'),
+          component: () => import('~/modules/budget/views/BudgetsView.vue'),
           children: [
             {
               path: ':categoryId',
               name: 'budget-category' as RouteName,
-              component: () => import('@/modules/budget/views/BudgetCategoryView.vue')
+              component: () => import('~/modules/budget/views/BudgetCategoryView.vue')
             }
           ]
         },
         {
           path: 'deudas',
           name: 'deudas' as RouteName,
-          component: () => import('@/modules/deudas/views/DeudasView.vue'),
+          component: () => import('~/modules/deudas/views/DeudasView.vue'),
           meta: { userOnly: true },
           children: [
             {
               path: 'historial',
               name: 'deudas-historial' as RouteName,
-              component: () => import('@/modules/deudas/views/HistorialView.vue'),
+              component: () => import('~/modules/deudas/views/HistorialView.vue'),
               meta: { userOnly: true }
             }
           ]
@@ -70,7 +70,7 @@ const router = createRouter({
         {
           path: 'planificacion',
           name: 'planificacion' as RouteName,
-          component: () => import('@/modules/planificacion/views/PlanificacionView.vue')
+          component: () => import('~/modules/planificacion/views/PlanificacionView.vue')
         }
       ]
     }
@@ -78,7 +78,7 @@ const router = createRouter({
 })
 
 // Navigation guard for protected routes
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
   
   // Check if route requires authentication

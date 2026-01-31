@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, h, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { Button } from '@/shared/components'
-import { useBudgets } from '@/modules/budget/composables/useBudgets'
-import type { NavigationItem, BudgetTable } from '@/shared/types'
+import { useAuthStore } from '~/stores/auth'
+import { Button } from '~/shared/components'
+import { useBudgets } from '~/modules/budget/composables/useBudgets'
+import type { NavigationItem, BudgetTable } from '~/shared/types'
 
 // Types
 
@@ -203,7 +203,7 @@ const dynamicNavigationItems = computed((): NavigationItem[] => {
 
 // Dynamic budgets navigation
 const budgetsNavigationItem = computed((): NavigationItem => {
-  const budgetTables = tables.value as BudgetTable[] | undefined
+  const budgetTables = (tables && 'value' in tables) ? (tables.value as BudgetTable[] || []) : []
   
   return {
     name: 'budgets',

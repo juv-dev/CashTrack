@@ -99,10 +99,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useAuthStore } from '@/modules/auth/store/auth';
+import { useAuthStore } from '~/modules/auth/store/auth';
 import { useRoute } from 'vue-router';
-import { useBudgets } from '@/modules/budget/composables/useBudgets';
-import { useDeudas } from '@/modules/deudas/composables/useDeudas';
+import { useBudgets } from '~/modules/budget/composables/useBudgets';
+import { useDeudas } from '~/modules/deudas/composables/useDeudas';
 
 // Auth store and route
 const authStore = useAuthStore();

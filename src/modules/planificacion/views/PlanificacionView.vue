@@ -111,9 +111,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useAuthStore } from '@/modules/auth/store/auth';
-import { useBudgets } from '@/modules/budget/composables/useBudgets';
-import { useDeudas } from '@/modules/deudas/composables/useDeudas';
+import { useAuthStore } from '~/modules/auth/store/auth';
+import { useBudgets } from '~/modules/budget/composables/useBudgets';
+import { useDeudas } from '~/modules/deudas/composables/useDeudas';
 
 // Auth store
 const authStore = useAuthStore();

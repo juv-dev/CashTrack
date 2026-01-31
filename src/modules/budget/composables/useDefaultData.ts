@@ -1,12 +1,18 @@
-import type { BudgetTable, BudgetItem } from '@/shared/types'
+import type { BudgetTable, BudgetItem } from '~/shared/types'
 
 export const useDefaultData = () => {
   const getDefaultTables = (): BudgetTable[] => {
+    const now = new Date().toISOString()
+    const defaultUserId = 'default-user'
+    
     return [
       {
         id: 'persona1',
         name: 'G. Persona 1',
         description: 'Gastos personales',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '1', name: 'Gastos personales(celular,etc)', amount: 39.95 },
           { id: '2', name: 'Transporte', amount: 150.00 }
@@ -16,6 +22,9 @@ export const useDefaultData = () => {
         id: 'persona2',
         name: 'G. Persona 2',
         description: 'Gastos personales',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '3', name: 'Gastos personales(celular,etc)', amount: 39.95 },
           { id: '4', name: 'Transporte', amount: 150.00 }
@@ -25,6 +34,9 @@ export const useDefaultData = () => {
         id: 'persona3',
         name: 'G. Persona 3',
         description: 'Gastos personales',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '3', name: 'Gastos personales(celular,etc)', amount: 27.90 },
           { id: '4', name: 'Internet', amount: 55.00 }
@@ -34,6 +46,9 @@ export const useDefaultData = () => {
         id: 'comida',
         name: 'Alimentos',
         description: 'Gastos de alimentos',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '3', name: 'Comida', amount: 500.00 },
           { id: '4', name: 'Contribuciones', amount: 100.00 }
@@ -43,6 +58,9 @@ export const useDefaultData = () => {
         id: 'plataforma',
         name: 'Plataforma',
         description: 'Suscripciones digitales',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '1', name: 'Disney+', amount: 68.90 },
           { id: '2', name: 'ICloud', amount: 48.02 },
@@ -53,6 +71,9 @@ export const useDefaultData = () => {
         id: 'servicios',
         name: 'Servicios',
         description: 'Servicios mensuales y utilidades',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '1', name: 'Gas - 5197742', amount: 30.00 },
           { id: '2', name: 'Luz', amount: 100.00 },
@@ -63,6 +84,9 @@ export const useDefaultData = () => {
         id: 'lucah',
         name: 'Gastos Lucah',
         description: 'Gastos personales de Lucah',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '1', name: 'Baño', amount: 50.00 },
           { id: '2', name: 'Comida', amount: 86.00 },
@@ -73,6 +97,9 @@ export const useDefaultData = () => {
         id: 'deudas',
         name: 'Deudas',
         description: 'Deudas',
+        userId: defaultUserId,
+        createdAt: now,
+        updatedAt: now,
         items: [
           { id: '1', name: 'BCP 1', amount: 584.00 },
           { id: '2', name: 'BCP 2', amount: 262.11 },

@@ -292,7 +292,7 @@
                 type="number"
                 required
                 min="1"
-                :max="selectedDebt?.totalInstallments - (selectedDebt?.paidInstallments || 0)"
+                :max="(selectedDebt?.totalInstallments || 0) - (selectedDebt?.paidInstallments || 0)"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
                 placeholder="1"
               />
@@ -334,13 +334,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useDeudas } from '../composables/useDeudas'
-import type { CreditCardDebt } from '@/shared/types'
+import type { CreditCardDebt } from '~/shared/types'
 
-const router = useRouter()
 const route = useRoute()
-const { debts, history, totalDebt, pendingDebts, partialDebts, initialize, addDebt, updateDebtStatus, deleteDebt } = useDeudas()
+const { debts, totalDebt, pendingDebts, partialDebts, initialize, addDebt, updateDebtStatus, deleteDebt } = useDeudas()
 
 // Computed property to check if we're on the main deudas page
 const isDeudasMain = computed(() => route.path === '/deudas' || route.path === '/deudas/')

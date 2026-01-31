@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useBudgets } from './useBudgets'
-import { useDefaultData } from '@/shared/composables'
+import { useDefaultData } from '~/shared/composables'
 
 export const useCharts = () => {
   const { tables } = useBudgets()
@@ -8,7 +8,7 @@ export const useCharts = () => {
 
   // Chart data for categories distribution
   const categoryDistributionData = computed(() => {
-    if (!tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
+    if (!tables || !('value' in tables) || !tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
       return {
         labels: [],
         datasets: [{
@@ -22,12 +22,12 @@ export const useCharts = () => {
     }
 
     return {
-      labels: tables.value.map(table => table.name),
+      labels: tables.value.map((table: any) => table.name),
       datasets: [{
         label: 'Gastos por Categoría',
-        data: tables.value.map(table => calculateTableTotal(table)),
-        backgroundColor: tables.value.map((_, index) => getChartColor(index, 0.8)),
-        borderColor: tables.value.map((_, index) => getChartColor(index)),
+        data: tables.value.map((table: any) => calculateTableTotal(table)),
+        backgroundColor: tables.value.map((_: any, index: number) => getChartColor(index, 0.8)),
+        borderColor: tables.value.map((_: any, index: number) => getChartColor(index)),
         borderWidth: 1
       }]
     }
@@ -35,7 +35,7 @@ export const useCharts = () => {
 
   // Chart data for monthly comparison (mock data for demonstration)
   const monthlyComparisonData = computed(() => {
-    if (!tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
+    if (!tables || !('value' in tables) || !tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
       return {
         labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
         datasets: []
@@ -43,17 +43,17 @@ export const useCharts = () => {
     }
 
     const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun']
-    const currentTotals = tables.value.map(table => calculateTableTotal(table))
+    const currentTotals = tables.value.map((table: any) => calculateTableTotal(table))
     
     // Generate mock historical data (in real app, this would come from API)
-    const historicalData = currentTotals.map(total => {
+    const historicalData = currentTotals.map((total: any) => {
       const base = total * 0.8
       return months.map(() => base + Math.random() * (total - base))
     })
 
     return {
       labels: months,
-      datasets: tables.value.map((table, index) => ({
+      datasets: tables.value.map((table: any, index: number) => ({
         label: table.name,
         data: historicalData[index],
         backgroundColor: getChartColor(index),
@@ -66,7 +66,7 @@ export const useCharts = () => {
 
   // Chart data for expense breakdown by category
   const expenseBreakdownData = computed(() => {
-    if (!tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
+    if (!tables || !('value' in tables) || !tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
       return {
         labels: [],
         datasets: [{
@@ -80,12 +80,12 @@ export const useCharts = () => {
     }
 
     return {
-      labels: tables.value.map(table => table.name),
+      labels: tables.value.map((table: any) => table.name),
       datasets: [{
         label: 'Gastos por Categoría',
-        data: tables.value.map(table => calculateTableTotal(table)),
-        backgroundColor: tables.value.map((_, index) => getChartColor(index, 0.8)),
-        borderColor: tables.value.map((_, index) => getChartColor(index)),
+        data: tables.value.map((table: any) => calculateTableTotal(table)),
+        backgroundColor: tables.value.map((_: any, index: number) => getChartColor(index, 0.8)),
+        borderColor: tables.value.map((_: any, index: number) => getChartColor(index)),
         borderWidth: 1
       }]
     }
@@ -93,7 +93,7 @@ export const useCharts = () => {
 
   // Statistics
   const statistics = computed(() => {
-    if (!tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
+    if (!tables || !('value' in tables) || !tables.value || !Array.isArray(tables.value) || tables.value.length === 0) {
       return {
         totalCategories: 0,
         totalExpenses: 0,
@@ -103,7 +103,7 @@ export const useCharts = () => {
       }
     }
 
-    const totals = tables.value.map(table => calculateTableTotal(table))
+    const totals = tables.value.map((table: any) => calculateTableTotal(table))
     const total = calculateGrandTotal(tables.value)
     
     return {
@@ -111,13 +111,13 @@ export const useCharts = () => {
       totalExpenses: total,
       averagePerCategory: tables.value.length > 0 ? total / tables.value.length : 0,
       highestCategory: tables.value.length > 0 ? {
-        name: tables.value.reduce((max, table) => 
+        name: tables.value.reduce((max: any, table: any) => 
           calculateTableTotal(table) > calculateTableTotal(max) ? table : max
         ).name,
         amount: Math.max(...totals)
       } : { name: 'N/A', amount: 0 },
       lowestCategory: tables.value.length > 0 ? {
-        name: tables.value.reduce((min, table) => 
+        name: tables.value.reduce((min: any, table: any) => 
           calculateTableTotal(table) < calculateTableTotal(min) ? table : min
         ).name,
         amount: Math.min(...totals)

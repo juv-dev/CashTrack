@@ -1,21 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from '~/stores/auth'
 import { BudgetsAPI } from '../services/api'
-
-// Types
-interface BudgetItem {
-  id: string
-  name: string
-  amount: number
-}
-
-interface BudgetTable {
-  id: string
-  name: string
-  description: string
-  items: BudgetItem[]
-}
+import type { BudgetTable, BudgetItem } from '~/shared/types'
 
 // Query keys
 export const budgetKeys = {
@@ -48,13 +35,13 @@ export function useBudgets() {
     return useQuery({
       queryKey: budgetKeys.table(authStore.user?.id || '', tableId),
       queryFn: () => {
-        const allTables = tables.value
+        const allTables = tables && 'value' in tables ? tables.value : []
         if (!allTables || !Array.isArray(allTables)) {
           return null
         }
         return allTables.find(table => table.id === tableId) || null
       },
-      enabled: computed(() => !!authStore.user?.id && !!tables.value && Array.isArray(tables.value) && tables.value.length > 0),
+      enabled: computed(() => !!authStore.user?.id && tables && 'value' in tables && !!tables.value && Array.isArray(tables.value) && tables.value.length > 0),
       staleTime: 1000 * 60 * 5,
     })
   }
@@ -139,17 +126,15 @@ export function useBudgets() {
 
   // Computed values
   const grandTotal = computed(() => {
-    if (!tables.value || !Array.isArray(tables.value)) {
+    if (!tables || !('value' in tables) || !tables.value || !Array.isArray(tables.value)) {
       return 0
     }
     
-    return tables.value.reduce((total, table) => {
+    return tables.value.reduce((total: number, table: BudgetTable) => {
       if (!table || !table.items || !Array.isArray(table.items)) {
         return total
       }
-      const tableTotal = table.items.reduce((sum, item) => {
-        return sum + (item?.amount || 0)
-      }, 0)
+      const tableTotal = table.items.reduce((sum: number, item: BudgetItem) => sum + (item?.amount || 0), 0)
       return total + tableTotal
     }, 0)
   })

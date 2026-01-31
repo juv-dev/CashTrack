@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite'
 import Components from 'unplugin-vue-components/vite'
 import RekaResolver from 'reka-ui/resolver'
 import { resolve } from 'path'
-import history from 'connect-history-api-fallback'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,18 +16,10 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src')
+      '~': resolve(__dirname, 'src')
     }
   },
   server: {
-    middlewareMode: false,
-    middleware: [
-      history({
-        verbose: true,
-        rewrites: [
-          { from: /^\/(?!.*\.).*$/, to: '/index.html' }
-        ]
-      })
-    ]
+    middlewareMode: false
   }
 })

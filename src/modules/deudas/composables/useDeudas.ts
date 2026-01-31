@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import type { CreditCardDebt } from '@/shared/types'
+import { useAuthStore } from '~/stores/auth'
+import type { CreditCardDebt } from '~/shared/types'
 
 export function useDeudas() {
   const authStore = useAuthStore()
@@ -112,6 +112,8 @@ export function useDeudas() {
     if (debtIndex === -1) return
     
     const debt = debts.value[debtIndex]
+    if (!debt) return
+    
     debt.status = status
     debt.updatedAt = new Date().toISOString()
     

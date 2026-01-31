@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button } from '@/shared/components'
-import { useCategoryLogic } from '@/modules/budget/composables/useCategoryLogic'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, Button } from '~/shared/components'
+import { useCategoryLogic } from '~/modules/budget/composables/useCategoryLogic'
 
 // Use category logic composable
 const {
@@ -24,6 +24,20 @@ const {
   addItem,
   calculateTableTotal
 } = useCategoryLogic()
+
+// Helper function to safely get edit value
+const getEditValue = (itemId: string, field: 'name' | 'amount') => {
+  return editItemValues.value[itemId]?.[field] || ''
+}
+
+// Helper function to safely set edit value
+const setEditValue = (itemId: string, field: 'name' | 'amount', event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!editItemValues.value[itemId]) {
+    editItemValues.value[itemId] = { name: '', amount: '' }
+  }
+  editItemValues.value[itemId][field] = target.value
+}
 </script>
 
 <template>
@@ -94,18 +108,21 @@ const {
             <div v-for="item in currentCategory.items" :key="item.id" class="bg-white rounded-lg border border-gray-200 p-4">
               <div v-if="editingItemId === item.id" class="space-y-2">
                 <input
-                  v-model="editItemValues[item.id].name"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  placeholder="Nombre del item"
+                  :value="getEditValue(item.id, 'name')"
+                  @input="setEditValue(item.id, 'name', $event)"
+                  type="text"
+                  class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                  placeholder="Nombre"
                 />
                 <input
-                  v-model="editItemValues[item.id].amount"
+                  :value="getEditValue(item.id, 'amount')"
+                  @input="setEditValue(item.id, 'amount', $event)"
                   type="number"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  class="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                   placeholder="Monto"
                 />
                 <div class="flex gap-2">
-                  <Button variant="primary" size="sm" @click="saveEditItem(item.id)" :disabled="updateItemMutation.isPending">
+                  <Button variant="primary" size="sm" @click="saveEditItem(item.id)" :disabled="updateItemMutation.isPending.value">
                     Guardar
                   </Button>
                   <Button variant="secondary" size="sm" @click="cancelEditItem">
@@ -122,7 +139,7 @@ const {
                   <Button variant="secondary" size="sm" @click="startEditItem(item.id)">
                     Editar
                   </Button>
-                  <Button variant="danger" size="sm" @click="deleteItem(item.id)" :disabled="deleteItemMutation.isPending">
+                  <Button variant="danger" size="sm" @click="deleteItem(item.id)" :disabled="deleteItemMutation.isPending.value">
                     Eliminar
                   </Button>
                 </div>
@@ -179,7 +196,8 @@ const {
                     <td class="px-6 py-4">
                       <div v-if="editingItemId === item.id" class="flex items-center gap-2">
                         <input
-                          v-model="editItemValues[item.id].name"
+                          :value="getEditValue(item.id, 'name')"
+                          @input="setEditValue(item.id, 'name', $event)"
                           class="h-8 text-sm px-2 border border-[#e5e7eb] rounded"
                         />
                       </div>
@@ -188,7 +206,8 @@ const {
                     <td class="px-6 py-4">
                       <div v-if="editingItemId === item.id" class="flex items-center gap-2">
                         <input
-                          v-model="editItemValues[item.id].amount"
+                          :value="getEditValue(item.id, 'amount')"
+                          @input="setEditValue(item.id, 'amount', $event)"
                           type="number"
                           class="h-8 text-sm px-2 border border-[#e5e7eb] rounded w-24"
                         />
@@ -202,7 +221,7 @@ const {
                             class="p-1.5 text-[#50cd89] hover:bg-[#f9fafb] rounded transition-colors" 
                             title="Guardar"
                             @click="saveEditItem(item.id)"
-                            :disabled="updateItemMutation.isPending"
+                            :disabled="updateItemMutation.isPending.value"
                           >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -232,7 +251,7 @@ const {
                             class="p-1.5 text-[#6b7280] hover:text-[#f1416c] hover:bg-[#f9fafb] rounded transition-colors" 
                             title="Eliminar" 
                             @click="deleteItem(item.id)"
-                            :disabled="deleteItemMutation.isPending"
+                            :disabled="deleteItemMutation.isPending.value"
                           >
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -282,7 +301,7 @@ const {
             <Button 
               variant="primary" 
               @click="addItem"
-              :disabled="!newItemName.trim() || !newItemAmount.trim() || addItemMutation.isPending"
+              :disabled="!newItemName.trim() || !newItemAmount.trim() || addItemMutation.isPending.value"
             >
               <div v-if="addItemMutation.isPending" class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
               {{ addItemMutation.isPending ? 'Agregando...' : 'Agregar' }}

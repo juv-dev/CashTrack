@@ -1,4 +1,4 @@
-import type { BudgetTable, BudgetItem } from '@/shared/types'
+import type { BudgetTable, BudgetItem } from '~/shared/types'
 import { useDefaultData } from '../composables/useDefaultData'
 
 // LocalStorage API Service - Frontend Only
@@ -68,7 +68,7 @@ export class BudgetsAPI {
     if (table) {
       const itemIndex = table.items.findIndex(item => item.id === itemId)
       if (itemIndex !== -1) {
-        table.items[itemIndex] = { ...table.items[itemIndex], ...updates }
+        table.items[itemIndex] = { ...table.items[itemIndex], ...updates } as BudgetItem
         return this.saveTables(userId, tables)
       }
     }
@@ -106,7 +106,7 @@ export class BudgetsAPI {
     const tableIndex = tables.findIndex(t => t.id === tableId)
     
     if (tableIndex !== -1) {
-      tables[tableIndex] = { ...tables[tableIndex], ...updates }
+      tables[tableIndex] = { ...tables[tableIndex], ...updates } as BudgetTable
       return this.saveTables(userId, tables)
     }
     

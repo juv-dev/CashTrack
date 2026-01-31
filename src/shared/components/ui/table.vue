@@ -25,15 +25,6 @@ const tableHeaderClass = computed(() => {
   return 'bg-[#f9fafb] text-[#374151] font-medium'
 })
 
-const tableRowClass = computed(() => {
-  const baseClasses = 'border-b border-[#e5e7eb] hover:bg-[#f9fafb] transition-colors'
-  return `${baseClasses} ${props.striped ? 'odd:bg-white even:bg-[#f9fafb]' : ''}`
-})
-
-const tableCellClass = computed(() => {
-  return 'px-4 py-3.5 text-[#374151]'
-})
-
 const tableHeadCellClass = computed(() => {
   return 'px-4 py-3.5 text-[#374151] font-medium'
 })

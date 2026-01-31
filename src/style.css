@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* Rider Theme Colors */
+:root {
+  /* Primary Colors */
+  --color-primary: #009ef7;
+  --color-primary-light: #fefaf4;
+  --color-primary-dark: #0078d4;
+  
+  /* Gray Scale */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  
+  /* Status Colors */
+  --color-success: #50cd89;
+  --color-warning: #ffc700;
+  --color-danger: #f1416c;
+  --color-info: #7239ea;
+}
+
+/* Base styles */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    font-family: inherit;
+    line-height: inherit;
+    background-color: #fefaf4;
+    color: var(--color-gray-900);
+  }
+
+  #app {
+    min-height: 100vh;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-gray-100);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-400);
+  }
+
+  /* Animation utilities */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  /* Custom focus styles */
+  .focus-ring {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary-light);
+  }
+
+  /* Rider Button Styles */
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-300);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-gray-200);
+  }
+
+  /* Rider Card Styles */
+  .card-rider {
+    background-color: white;
+    border: 1px solid var(--color-gray-200);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .card-rider:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}

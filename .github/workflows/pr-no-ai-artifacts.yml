@@ -1,0 +1,14 @@
+name: PR - No AI Artifacts
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  no-ai-artifacts:
+    name: no-ai-artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: juv-dev/workflows-frontend/.github/actions/no-ai-artifacts@main
